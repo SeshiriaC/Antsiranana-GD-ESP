@@ -10,6 +10,7 @@ import { useThemeStore } from "@/pinia/theme";
 
 // import VueRouter plugins
 import { useRouter } from "vue-router";
+import { useAppchoiceStore } from "@/pinia/appchoice";
 
 // instance my plugins
 const url = new URL();
@@ -22,6 +23,7 @@ const router = useRouter();
 const navigation = useNavigationStore();
 const dialog = useDialogStore();
 const theme = useThemeStore();
+const appchoice = useAppchoiceStore();
 
 // select workspace
 function select(path) {

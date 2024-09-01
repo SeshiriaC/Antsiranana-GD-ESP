@@ -42,7 +42,6 @@ function verify() {
 
 <template>
   <div id="container-form-authentification" class="text-center">
-    <!-- <h1>Bienvenue sur GD-ESPA</h1> -->
     <img id="img-logo-espa" :src="`${url.images}/logo-esp-antsiranana.png`" class="mb-16"/>
     <v-card class="mx-auto elevation-24 rounded-lg" width="400">
       <v-card-text>        

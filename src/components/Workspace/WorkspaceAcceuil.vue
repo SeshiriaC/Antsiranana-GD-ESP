@@ -59,7 +59,7 @@ onBeforeMount(() => {
             pédagogiques.
           </li>
           <li class="my-4">
-            Vous faites partie des :
+            Vos rôles sont :
             <ol class="ml-8">
               <li
                 v-for="(item, index) in status.list"

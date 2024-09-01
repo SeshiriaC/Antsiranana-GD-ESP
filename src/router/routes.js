@@ -42,6 +42,10 @@ import WorkspaceProgrammeEnseignementListes from "@/components/Workspace/Workspa
 import WorkspaceSelectionDossier from "@/components/Workspace/WorkspaceSelectionDossier.vue";
 import WorkspaceEtudiantResultat from "@/components/Workspace/WorkspaceEtudiantResultat.vue";
 import WorkspaceEtudiantReleveNote from "@/components/Workspace/WorkspaceEtudiantReleveNote.vue";
+import WorkspaceActivite from "@/components/Workspace/WorkspaceActivite.vue";
+import WorkspaceActiviteListes from "@/components/Workspace/WorkspaceActiviteListes.vue";
+import WorkspaceEtudiantProfil from "@/components/Workspace/WorkspaceEtudiantProfil.vue";
+
 
 
 // instance of my router and export it
@@ -103,9 +107,16 @@ export default createRouter({
         { name: "Créer les LOGIN des étudiants", path: "authentification", component: WorkspaceEtudiantAuthentification },
         { name: "Valider inscription administrative", path: "validation-inscription-administrative", component: WorkspaceEtudiantValidationInscriptionAdministrative },
         { name: "Visualiser un relevé de notes", path: "releve-note", component: WorkspaceEtudiantReleveNote },
+        { name: "Profil de l'étudiant", path:"profil", component: WorkspaceEtudiantProfil}
       ]
     },
-    { name: "Valider les séléctions de dossier", path: "/selection-dossier", component: WorkspaceSelectionDossier }
+    { name: "Valider les séléctions de dossier", path: "/selection-dossier", component: WorkspaceSelectionDossier },
+    {name: "Les activités pédagogiques", path:"/activite", component: WorkspaceActivite,
+      children:[
+        {name: "Liste des activités", path:"listes", component: WorkspaceActiviteListes}
+      ]
+    }
+    
   ]
 
 });

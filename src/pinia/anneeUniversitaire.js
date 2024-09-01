@@ -30,6 +30,7 @@ export const useAnneeUniversitaireStore = defineStore(
       });
       return result.value;
     }
+    
 
     function createAU() {
       let requestData = {

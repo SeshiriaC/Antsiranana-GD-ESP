@@ -21,6 +21,7 @@ import Authentification from "@/components/Authentification.vue";
 import Workspace from "@/components/Workspace.vue";
 import SwitchTheme from "@/components/SwitchTheme.vue";
 import Navigation from "@/components/Navigation.vue";
+
 // import Bar from '@/components/Bar.vue';
 
 // instancing my plugins
@@ -72,6 +73,7 @@ onBeforeMount(() => {
 
       <div id="container-switch-theme">
         <SwitchTheme v-if="view.selected === 'Authentification'"></SwitchTheme>
+        <!-- <SwitchApp v-if="view.selected === 'Authentification'"></SwitchApp> -->
       </div>
     </v-main>
 
@@ -86,6 +88,10 @@ onBeforeMount(() => {
   position: fixed;
   right: 24px;
   bottom: 24px;
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: flex-end;
+  gap: 10px;
 }
 
 </style>
