@@ -5,6 +5,11 @@ export const useClasseStore = defineStore("classe", () => {
   const restApi = new RestApi();
 
   const list = ref([]);
+  const id = ref(null);
+  const designation = ref(null);
+  const niveau = ref(null);
+  const mention = ref(null);
+  const parcours = ref(null);
   const selectedClasse = ref(null);
 
   // Fonction pour récupérer classe % à la mention
@@ -14,7 +19,7 @@ export const useClasseStore = defineStore("classe", () => {
       .then((response) => {
         console.log("Fetch by Mention sent");
         list.value = response.data;
-        console.log(list.value);
+        console.log(list);
       })
       .catch((error) => {
         console.error(error);
@@ -31,7 +36,12 @@ export const useClasseStore = defineStore("classe", () => {
   }
 
   return {
+    id,
     list,
+    designation,
+    niveau,
+    mention,
+    parcours,
     selectedClasse,
     fetchClassesByMention,
     getClasse,

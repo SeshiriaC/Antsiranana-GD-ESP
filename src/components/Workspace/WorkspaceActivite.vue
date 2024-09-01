@@ -65,42 +65,104 @@ onBeforeMount(() => {
   }
 });
 
-//Watcher for selectedAnneeUniversitaire changes
+// Watcher for changes in selectedAnneeUniversitaire
 watch(selectedAnneeUniversitaire, (newIdAU) => {
-  if (newIdAU) {
-    selectedMention.value = null;
-    selectedClasse.value = null;
+  // Reset dependent states
+  selectedMention.value = null;
+  selectedClasse.value = null;
+  if (service.verifyIfNotEmpty(newIdAU)) {
+    restApi
+      .get(`/api/definition-mention/annee/${newIdAU}`)
+      .then((response) => {
+        mentionStore.list = response.data;
+      })
+      .catch((error) => {
+        alert.error();
+        console.error(error);
+      });
   } else {
+    // Clear lists when no academic year is selected
     mentionList.value = [];
     classeList.value = [];
-    console.log("Nope")
   }
 });
 
 
 // Watcher for selectedMention changes
 watch(selectedMention, (newIdMention) => {
+  selectedNiveau.value = null;
+  selectedClasse.value = null;
   if (newIdMention) {
     // Find the mention object by ID from the mentionList
-    const selectedMentionObject = mentionList.value.find((mention) => mention.id === newIdMention);
+    const selectedMentionObject = mentionList.value.find(
+      (mention) => mention.id === newIdMention
+    );
 
     if (selectedMentionObject) {
-      // Access the acronyme property from the found mention object
+      // Access the acronyme property
       const acronyme = selectedMentionObject.acronymeMention;
-      console.log(acronyme, ":", typeof (acronyme));
 
-      // Fetch classes based on the mention acronyme 
+      // Re-fetch classes based on the new acronyme
       classeStore.fetchClassesByMention(acronyme);
-        
+    } else {
+      // Handle case where mention object is not found (optional)
     }
-
-    // Reset class selection when mention changes
-    selectedClasse.value = null;
   } else {
     // Clear classes if no mention is selected
     classeStore.list.value = [];
   }
+
 });
+
+
+//watch for selectedNiveau change
+watch(selectedNiveau, (newIdNiveau) => {
+  selectedClasse.value = null;
+  if (newIdNiveau) {
+    // Find the corresponding niveau object
+    const selectedNiveauObject = niveauList.value.find(
+      (niveau) => niveau.id === newIdNiveau
+    );
+
+    // Find the corresponding mention object
+    const selectedMentionObject = mentionList.value.find(
+      (mention) => mention.id === selectedMention.value
+    );
+
+    if (selectedNiveauObject) {
+      // Access the niveau value
+      const niveauValue = selectedNiveauObject.niveau;
+
+      console.log("selected Mention: ", selectedMention.value);
+      console.log("selected AU:", selectedAnneeUniversitaire.value);
+      console.log("Selected Mention Object: ", selectedMentionObject.acronymeMention);
+      // Filter based on both mention and niveau
+      let filteredClasses = [];
+
+      classeStore.list.forEach(classe => {
+        if (
+          classe.niveau === niveauValue &&
+          classe.mention === selectedMentionObject.acronymeMention) {
+          console.log(classe.niveau)
+          filteredClasses.push(classe);
+        }
+      });
+
+      console.log("Filtered classe:", filteredClasses);
+
+
+      classeStore.list.value = filteredClasses;
+      console.log("Filtered classe:", filteredClasses);
+    } else {
+      classeStore.list.value = [];
+    }
+  } else {
+    // Handle case where selectedNiveau is null (optional)
+    classeStore.list.value = [];
+  }
+
+});
+
 
 
 // Fetch a specific class by ID (example function)
@@ -142,8 +204,8 @@ function fetchClasseById(id) {
       </v-col>
 
       <v-col class="px-2">
-        <v-select density="comfortable" label="Classe" :items="classeList" item-title="designation" item-value="id"
-          v-model="selectedClasse" :disabled="!selectedNiveau" />
+        <v-select density="comfortable" label="Classe" :items="classeList" item-title="designationClasse"
+          item-value="id" v-model="selectedClasse" :disabled="!selectedNiveau" />
       </v-col>
     </v-row>
 

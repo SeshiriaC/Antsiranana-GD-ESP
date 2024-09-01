@@ -199,6 +199,7 @@ export const useMentionStore = defineStore("mention", () => {
     }
   }
 
+
   return {
     list,
     designation,
