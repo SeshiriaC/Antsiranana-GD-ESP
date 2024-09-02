@@ -18,4 +18,14 @@ export const useActiviteStore = defineStore("activite", () => {
   const idEnseignant = ref(null);
   const idClasse = ref(null);
 
-})
+  //Récupération activité 
+  function fetchActivite(){
+    restApi
+    .get(`api/activite`)
+    .then((response) =>{
+      console.log("Fetch activite sent, expected list")
+    })
+  }
+
+
+});

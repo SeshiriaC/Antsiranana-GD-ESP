@@ -82,8 +82,8 @@ watch(selectedAnneeUniversitaire, (newIdAU) => {
       });
   } else {
     // Clear lists when no academic year is selected
-    mentionList.value = [];
-    classeList.value = [];
+    mentionList = [];
+    classeList = [];
   }
 });
 
@@ -92,11 +92,14 @@ watch(selectedAnneeUniversitaire, (newIdAU) => {
 watch(selectedMention, (newIdMention) => {
   selectedNiveau.value = null;
   selectedClasse.value = null;
+  console.log("Mention sélectionnée 1:", selectedMention);
   if (newIdMention) {
     // Find the mention object by ID from the mentionList
     const selectedMentionObject = mentionList.value.find(
       (mention) => mention.id === newIdMention
     );
+
+    console.log("Mention sélectionnée 2", selectedMentionObject.acronymeMention);
 
     if (selectedMentionObject) {
       // Access the acronyme property
@@ -104,12 +107,15 @@ watch(selectedMention, (newIdMention) => {
 
       // Re-fetch classes based on the new acronyme
       classeStore.fetchClassesByMention(acronyme);
+
     } else {
-      // Handle case where mention object is not found (optional)
+      // Handle case where mention object is not found 
+      console.log("La mention n'a pas été trouvée e");
     }
   } else {
     // Clear classes if no mention is selected
-    classeStore.list.value = [];
+    classeStore.list = [];
+    console.log("Aucune mention sélectionnée");
   }
 
 });
@@ -117,7 +123,7 @@ watch(selectedMention, (newIdMention) => {
 
 //watch for selectedNiveau change
 watch(selectedNiveau, (newIdNiveau) => {
-  selectedClasse.value = null;
+  selectedClasse.value = null; //initialization of classe value
   if (newIdNiveau) {
     // Find the corresponding niveau object
     const selectedNiveauObject = niveauList.value.find(
@@ -133,13 +139,10 @@ watch(selectedNiveau, (newIdNiveau) => {
       // Access the niveau value
       const niveauValue = selectedNiveauObject.niveau;
 
-      console.log("selected Mention: ", selectedMention.value);
-      console.log("selected AU:", selectedAnneeUniversitaire.value);
-      console.log("Selected Mention Object: ", selectedMentionObject.acronymeMention);
       // Filter based on both mention and niveau
       let filteredClasses = [];
 
-      classeStore.list.forEach(classe => {
+      classeStore.list.forEach((classe) => {
         if (
           classe.niveau === niveauValue &&
           classe.mention === selectedMentionObject.acronymeMention) {
@@ -148,17 +151,16 @@ watch(selectedNiveau, (newIdNiveau) => {
         }
       });
 
-      console.log("Filtered classe:", filteredClasses);
+      classeStore.list = filteredClasses;
 
-
-      classeStore.list.value = filteredClasses;
-      console.log("Filtered classe:", filteredClasses);
     } else {
-      classeStore.list.value = [];
+      classeStore.list = [];
+      console.log("Pas de niveau séléctionné");
     }
   } else {
-    // Handle case where selectedNiveau is null (optional)
-    classeStore.list.value = [];
+    // Handle case where selectedNiveau is null 
+    classeStore.list = [];
+    console.log("Niveau est null");
   }
 
 });
