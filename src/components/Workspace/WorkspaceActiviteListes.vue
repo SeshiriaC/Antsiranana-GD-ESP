@@ -4,16 +4,16 @@ import { RestApi } from "@/plugins/restApi";
 import { Service } from "@/plugins/service";
 import { Scroll } from "@/plugins/scroll";
 
-// import Vuejs's plugins
-import { onBeforeMount, watch, onBeforeUnmount } from "vue";
+// import Vue's plugins
+import { onBeforeMount, watch, ref } from "vue";
 
 // import my Pinia plugins
 import { useAlertStore } from "@/pinia/alert";
 import { useOverlayStore } from "@/pinia/overlay";
-import { useEtudiantStore } from "@/pinia/etudiant";
 import { useNiveauStore } from "@/pinia/niveau";
-import { useParcoursStore } from "@/pinia/parcours";
 import { useAnneeUniversitaireStore } from "@/pinia/anneeUniversitaire";
+import { useClasseStore } from "@/pinia/classe";
+import { useActiviteStore } from "@/pinia/activite";
 
 // instance my plugins
 const restApi = new RestApi();
@@ -21,118 +21,70 @@ const service = new Service();
 const scroll = new Scroll();
 
 // instance my Pinia plugins
-const alert = useAlertStore();
-const overlay = useOverlayStore();
-const etudiant = useEtudiantStore();
-const niveau = useNiveauStore();
-const parcours = useParcoursStore();
-const anneeUniversitaire = useAnneeUniversitaireStore();
+const alertStore = useAlertStore();
+const overlayStore = useOverlayStore();
+const niveauStore = useNiveauStore();
+const anneeUniversitaireStore = useAnneeUniversitaireStore();
+const classeStore = useClasseStore();
+const activiteStore = useActiviteStore();
 
-// reload content of this table
-function reloadFirstTable() {
-  if (service.verifyIfNotEmpty(parcours.id)) {
-    overlay.show();
-    restApi
-      .get(`/api/etudiant/dp/${parcours.id}`)
-      .then((response) => {
-        etudiant.list = response.data;
-        overlay.hide();
-      })
-      .catch((error) => {
-        alert.error();
-        console.error(error);
-        overlay.hide();
-      });
-  }
-}
+// Local state for selected class
+const selectedClasse = ref(null); // Ensure this is initialized to a valid state
 
-// watch if anneeUniversitaire.id is changing
-watch(
-  () => anneeUniversitaire.id,
-  (newIdAU) => {
-    niveau.id = null;
-    parcours.id = null;
-    if (service.verifyIfNotEmpty(newIdAU)) {
-      restApi
-        .get(`/api/definition-parcours/annee/${newIdAU}`)
-        .then((response) => {
-          parcours.list = response.data;
-        })
-        .catch((error) => {
-          alert.error();
-          console.error(error);
-        });
-    }
-  }
-);
-
-// watch if niveau.id is changing
-watch(
-  () => niveau.id,
-  (newIdNiveau) => {
-    etudiant.list = [];
-  }
-);
-
-// watch if parcours.id is changing
-watch(
-  () => parcours.id,
-  (newParcoursId) => {
-    if (service.verifyIfNotEmpty(newParcoursId)) {
-      overlay.show();
-      restApi
-        .get(`/api/etudiant/dp/${newParcoursId}`)
-        .then((response) => {
-          etudiant.list = response.data;
-          overlay.hide();
-        })
-        .catch((error) => {
-          alert.error();
-          console.error(error);
-          overlay.hide();
-        });
-    }
-  }
-);
-
-// Called before mounting
+// Fetch activities when the component is mounted
 onBeforeMount(() => {
   scroll.toTop();
-  etudiant.list = [];
-  etudiant.listNotes = [];
-  niveau.id = null;
-  parcours.id = null;
+  if (selectedClasse.value) {
+    fetchActivitesByClasse(selectedClasse.value); // Corrected: Use `selectedClasse.value`
+  }
 });
 
-onBeforeUnmount(() => {
-  niveau.id = null;
-  parcours.id = null;
+// Watch for changes in the selected class and fetch activities accordingly
+watch(selectedClasse, (newIdClasse) => {
+  if (newIdClasse) {
+    fetchActivitesByClasse(newIdClasse); // Fetch activities for the selected class
+  } else {
+    activiteStore.list = []; // Clear the list if no class is selected
+  }
 });
+
+// Function to fetch activities by class ID
+function fetchActivitesByClasse(idClasse) {
+  if (!idClasse) return; // Ensure a class ID is provided
+
+  // Ensure this function returns a Promise if using .then()
+  return activiteStore.fetchActiviteByClasse(idClasse)
+    .then(() => {
+      console.log("Activités fetched successfully for class:", idClasse);
+    })
+    .catch((error) => {
+      console.log("Erreur de récupération des activités par classe:");
+      console.error(error);
+    });
+}
 </script>
 
 <template>
   <v-row no-gutters class="mt-4">
     <v-col cols="12">
-      <h5 class="text-h5">Listes des activités</h5>
+      <h5 class="text-h5">Liste des activités</h5>
     </v-col>
   </v-row>
-  <v-row no-gutters class="mt-2" v-if="service.verifyIfNotEmpty(etudiant.list)">
+  <v-row no-gutters class="mt-2" v-if="service.verifyIfNotEmpty(activiteStore.list)">
     <v-col cols="12">
       <v-table class="elevation-1" density="compact">
         <thead>
           <tr>
-            <th>Désignation</th>
-            <th>Mention</th>
-            <th>Parcours</th>
-            <th>Date</th>
+            <th>Type Activité</th>
+            <th>Désignation Activité</th>
+            <th>Nom EC</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(value, index) in etudiant.list" :key="index">
-            <td class="text-truncate">{{ value.nom }}</td>
-            <td class="text-truncate">{{ value.prenoms }}</td>
-            <td class="text-truncate">{{ value.telephone }}</td>
-            <td class="text-truncate">{{ value.email }}</td>
+          <tr v-for="(value, index) in activiteStore.list" :key="index">
+            <td class="text-truncate">{{ value.idTypeActivite }}</td>
+            <td class="text-truncate">{{ value.designationActivite }}</td>
+            <td class="text-truncate">{{ value.idEc.nomEc }}</td>
           </tr>
         </tbody>
       </v-table>

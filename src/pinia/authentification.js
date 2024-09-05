@@ -25,6 +25,7 @@ export const useAuthentificationStore = defineStore("authentification", () => {
             cookies.set("accessToken", response.data.accessToken);
             cookies.set("idPersonne", response.data.id);
             cookies.set("status", response.data.roles);
+            
             alert.add("success", "Bienvenue");
             view.set("Workspace");
             overlay.hide();

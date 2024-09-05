@@ -280,6 +280,8 @@ export const useNavigationStore = defineStore("navigation", () => {
         else break;
       case "ENSEIGNANT":
         access.enseignant = [];
+
+        //Ajout de la navigation `/etudiant`
         if (!list.value.some((item) => item.path == "/etudiant")) {
           access.enseignant.push({
             name: "Gestion des étudiants",
@@ -295,6 +297,29 @@ export const useNavigationStore = defineStore("navigation", () => {
                 name: "Transcrire les notes",
                 path: "/etudiant/notes",
                 icon: "mdi-account-edit",
+              },
+            ],
+          });
+        }
+
+        console.log(list);
+
+        //Ajout de la navigation pour `/activite`
+        if (!list.value.some((item) => item.path == "/activite")) {
+          access.enseignant.push({
+            name: "Gestion des activités",
+            path: "/activite",
+            icon: "mdi-calendar-check",
+            children: [
+              {
+                name: "Lister les activités",
+                path: "/activite/listes",
+                icon: "mdi-view-list",
+              },
+              {
+                name: "Créer une activité",
+                path: "/activite/ajouter-activite",
+                icon: "mdi-calendar-plus",
               },
             ],
           });

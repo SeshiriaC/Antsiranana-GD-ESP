@@ -25,7 +25,7 @@ const mentionList = computed(() => mentionStore.list);
 const classeList = computed(() => classeStore.list);
 const niveauList = computed(() => niveauStore.list);
 
-// Bind selected values to v-model in your template
+// Bind selected values to v-model in template
 const selectedAnneeUniversitaire = ref(anneeUniversitaireStore.id);
 const selectedNiveau = ref(null);
 const selectedMention = ref(null);
@@ -37,6 +37,7 @@ onBeforeMount(() => {
   niveauStore.list = [];
   mentionStore.list = [];
   classeStore.list = [];
+  
   Promise.all([
     restApi.get(`/api/annee`),
     restApi.get(`/api/niveau`),
@@ -92,7 +93,7 @@ watch(selectedAnneeUniversitaire, (newIdAU) => {
 watch(selectedMention, (newIdMention) => {
   selectedNiveau.value = null;
   selectedClasse.value = null;
-  console.log("Mention sélectionnée 1:", selectedMention);
+  
   if (newIdMention) {
     // Find the mention object by ID from the mentionList
     const selectedMentionObject = mentionList.value.find(
@@ -157,8 +158,7 @@ watch(selectedNiveau, (newIdNiveau) => {
       classeStore.list = [];
       console.log("Pas de niveau séléctionné");
     }
-  } else {
-    // Handle case where selectedNiveau is null 
+  } else { 
     classeStore.list = [];
     console.log("Niveau est null");
   }
@@ -167,7 +167,7 @@ watch(selectedNiveau, (newIdNiveau) => {
 
 
 
-// Fetch a specific class by ID (example function)
+// Fetch a specific class by ID 
 function fetchClasseById(id) {
   const designation = classeStore.getClasse(id);
   console.log('Fetched Classe Designation:', designation);
@@ -184,7 +184,7 @@ function fetchClasseById(id) {
     <v-row no-gutters class="mt-8">
       <v-col cols="12">
         <p class="font-weight-black text-subtitle-1 pb-2">
-          Sélectionnez l'année universitaire, la mention, et la classe des étudiants
+          Sélectionnez l'année universitaire, la mention, et la classe des étudiants.
         </p>
       </v-col>
 

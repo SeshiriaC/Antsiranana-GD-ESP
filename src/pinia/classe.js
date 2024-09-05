@@ -1,6 +1,8 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import { RestApi } from "@/plugins/restApi";
+
+
 export const useClasseStore = defineStore("classe", () => {
   const restApi = new RestApi();
 
