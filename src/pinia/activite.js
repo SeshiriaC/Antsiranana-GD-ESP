@@ -1,14 +1,17 @@
+import Overlay from "@/components/Overlay.vue";
 import { RestApi } from "@/plugins/restApi";
 import { Service } from "@/plugins/service";
+import { useOverlayStore } from "./overlay";
 import { defineStore } from "pinia";
 import { ref } from "vue";
 
 export const useActiviteStore = defineStore("activite", () => {
-  //Initiation des plugins
+  // Initialize plugins
   const restApi = new RestApi();
   const service = new Service();
+  const overlay = useOverlayStore();
 
-  //création des variables
+  // State variables
   const list = ref([]);
   const id = ref(null);
   const date = ref(null);
@@ -17,21 +20,9 @@ export const useActiviteStore = defineStore("activite", () => {
   const idEc = ref(null);
   const idEnseignant = ref(null);
   const idClasse = ref(null);
+  const selectedClasseInStore = ref(null); // Hold the selected class
 
-  //Ajouter une activite
-  function createActivite(){
-    let requestData = {
-      date: date.value,
-      designation : designation.value,
-      idTypeActivite : idTypeActivite.value,
-      idClasse : idClasse.value,
-      idEc : idEc.value,
-      idEnseignant : idEnseignant.value 
-    }
-  }
-
-
-  //Récupération activité
+  // Fetch all activities
   function fetchActivite() {
     restApi
       .get(`api/activite`)
@@ -46,45 +37,39 @@ export const useActiviteStore = defineStore("activite", () => {
       });
   }
 
-  //Récupération activité par classe
+  // Fetch activities by class
   function fetchActiviteByClasse(idClasse) {
     restApi
       .get(`api/activite/par-classe/${idClasse}`)
       .then((response) => {
-        console.log("Fetch activite par classe, expected list filtré par classe");
+        console.log(
+          "Fetch activite par classe, expected list filtré par classe"
+        );
         list.value = response.data;
         console.log("Fetched activite:", list);
       })
       .catch((error) => {
-        console.log("Erreur de récupération de la liste d'activité par classe dû à:");
+        console.log(
+          "Erreur de récupération de la liste d'activité par classe dû à:"
+        );
         console.error(error);
-      })
+      });
   }
 
-    // Method to create a new activite
-    function createActivite(newActivite) {
-      return restApi
-        .post(`/api/activite`, newActivite)
-        .then((response) => {
-          fetchActivite(); // Refresh list after creating
-          return response.data;
-        })
-        .catch((error) => {
-          console.error("Erreur lors de la création de l'activité :", error);
-          throw error;
-        });
-    }
+
 
   return {
     id,
     list,
     date,
     designation,
+    idTypeActivite,
     idEc,
     idEnseignant,
     idClasse,
+    selectedClasseInStore,
     fetchActivite,
     fetchActiviteByClasse,
-    createActivite
+    
   };
 });

@@ -36,41 +36,8 @@ export const useEnseignantStore = defineStore("enseignant", () => {
   const fullName = ref(null);
   const listJury = ref(null);
 
-  //Pour voir si un enseignant est connecté
-  const idEnseignantConnecte = ref(null);
-
-  // Récupérer idEnseignant en utilisant idPersonne dans cookies
-  function fetchIdEnseignant() {
-    return new Promise((resolve, reject) => {
-      const idPersonne = cookies.get("idPersonne");
-      console.log("Personne:", idPersonne); 
-      if (!idPersonne) {
-        console.error("idPersonne non disponible dans les cookies");
-        return reject("idPersonne non disponible");
-      }
-
-      overlay.show();
-      restApi
-        .get(`/api/enseignant/personne/${idPersonne}`) // Corrected the ID usage here
-        .then((response) => {
-          if (response.data) {
-            idEnseignantConnecte.value = response.data.idEnseignant; // Set idEnseignant
-            console.log("Fetched idEnseignant:", idEnseignantConnecte.value);
-            resolve(idEnseignantConnecte.value); // Resolve the Promise
-          } else {
-            reject("No data found for enseignant");
-          }
-        })
-        .catch((error) => {
-          console.error("Failed to fetch idEnseignant:", error);
-          alert.error();
-          reject(error);
-        })
-        .finally(() => {
-          overlay.hide();
-        });
-    });
-  }
+  //Enseignant connecté
+  const fetchedEnseignant = ref(null);
 
   // creating an "Enseignant"
   function create(data) {
@@ -100,6 +67,7 @@ export const useEnseignantStore = defineStore("enseignant", () => {
       })
       .catch((error) => {
         alert.error();
+        console.error();
         overlay.hide();
       });
   }
@@ -118,7 +86,7 @@ export const useEnseignantStore = defineStore("enseignant", () => {
         })
         .catch((error) => {
           alert.error();
-          console.error(error);
+          console.error();
           overlay.hide();
         });
     }
@@ -139,6 +107,19 @@ export const useEnseignantStore = defineStore("enseignant", () => {
     return fullName.value;
   }
 
+  function fetchIdEnseignant(idPersonne) {
+    restApi
+      .get(`api/enseignant/personne/${idPersonne}`)
+      .then((response) => {
+        console.log("Fetch Enseignant par idPersonne: ", idPersonne);
+        fetchedEnseignant.value = response.data; 
+      })
+      .catch((error) => {
+        console.log("Enseignant non récupéré avec id: ", idPersonne);
+        console.error(error);
+      });
+  }
+
   return {
     listJury,
     list,
@@ -149,7 +130,7 @@ export const useEnseignantStore = defineStore("enseignant", () => {
     status,
     grade,
     specialite,
-    idEnseignantConnecte,
+    fetchedEnseignant,
     create,
     updateEnseignant,
     setAllFullName,

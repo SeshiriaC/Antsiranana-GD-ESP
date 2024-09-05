@@ -2,19 +2,56 @@
 //importation stores
 import { useTypeActiviteStore } from "@/pinia/typeActivite";
 import { useEnseignantStore } from "@/pinia/enseignant";
-
-//importation plugins
 import { ref, onMounted, computed } from "vue";
 import { useActiviteStore } from "@/pinia/activite";
+import { useClasseStore } from "@/pinia/classe";
+import { useAlertStore } from "@/pinia/alert";
+
+//importation plugins
+import { Cookies } from "@/plugins/cookies";
+import { useOverlayStore } from "@/pinia/overlay";
+import { RestApi } from "@/plugins/restApi";
+
+
+// Initialiser plugin
+const restApi = new RestApi();
 
 // Initialiser les stores
 const enseignantStore = useEnseignantStore();
 const typeActiviteStore = useTypeActiviteStore();
+const classeStore = useClasseStore();
 const activiteStore = useActiviteStore();
+const overlay = useOverlayStore();
+const alert = useAlertStore();
 
 //computed properties to access state from store
-const typeActiviteList = typeActiviteStore.list.map((item) => item.typeActivite);
-console.log("TypeActiviteList: ", typeActiviteList);
+const enseignantResponsable = computed(() => enseignantStore.fetchedEnseignant);
+const selectedClasseInStore = computed(() => classeStore.selectedClasseInStore);
+const typeActiviteList = computed(() =>
+    typeActiviteStore.list)
+
+
+const cookies = new Cookies();
+
+// Récupérer idEnseignant en utilisant idPersonne dans cookies
+const idPersonne = cookies.get("idPersonne");
+console.log("Personne à ajouter:", idPersonne);
+enseignantStore.fetchIdEnseignant(idPersonne);
+
+//Liste EC
+const ecList = [
+    { id: 97, nomEc: 'Systèmes_Info&Algo' },
+    { id: 98, nomEc: 'Mécaniques_des_fluides' },
+    { id: 99, nomEc: 'Thermodynamiques' },
+    { id: 100, nomEc: 'Mécaniques_génarales1' },
+    { id: 101, nomEc: 'Magnétostatiques' },
+    { id: 102, nomEc: 'Analyses' },
+    { id: 77, nomEc: 'Chimie' },
+    { id: 78, nomEc: 'Resistances_des_Materiau' },
+    { id: 79, nomEc: 'Dessin_techniques' },
+    { id: 80, nomEc: 'Mathématiques' },
+    { id: 81, nomEc: 'Français' },
+    { id: 82, nomEc: 'Anglais' }]
 
 // Etat local pour les nouvelles activités
 const newActivite = ref({
@@ -29,20 +66,40 @@ const newActivite = ref({
 
 // Récupère typeActivites on mount
 onMounted(() => {
-    typeActiviteStore.fetchTypeActivites(); // Fetch typeActivites
+    typeActiviteStore.fetchTypeActivites();
+    // Fetch typeActivites
 
     // Fetch enseignant ID and set it in the newActivite object
-    enseignantStore.fetchIdEnseignant().then(() => {
-        newActivite.value.idEnseignantResponsable = enseignantStore.idEnseignantConnecte;
-    }).catch((error) => {
-        console.error("Failed to fetch enseignant ID:", error);
-    });
+
 });
 
 // Function to handle form submission
 function validerActivite() {
+    // idEnseignantResponsable = fetched enseignant ID
+    newActivite.value.idEnseignantResponsable = enseignantResponsable.value.id;
+    console.log("Selected enseignant: ", enseignantResponsable);
+
+    // idClasse = selected class from the store
+    newActivite.value.idClasse = selectedClasseInStore.value;
+    console.log("Store classe: ", selectedClasseInStore.value);
+
+    // Log the form data
     console.log("Submitting form with data:", newActivite.value);
-    //activiteStore.createActivite();//TO DO : Post it to the 
+
+    // Créer une activité
+    restApi
+        .post(`/api/activite/${newActivite.value.idTypeActivite}`, newActivite.value)
+        .then((response) => {
+            if (response.status == 200) alert.successSave();
+            overlay.hide();
+            console.log("Activité créée avec succès !");
+            fetchActivite();
+        })
+        .catch((error) => {
+            console.error("Erreur lors de la création de l'activité :", error);
+            console.error(error);
+            overlay.hide();
+        });
 }
 </script>
 
@@ -60,26 +117,15 @@ function validerActivite() {
                         v-model="newActivite.designationActivite"></v-text-field>
                 </v-col>
                 <v-col cols="8">
-                    <v-select label="Type de l'activité"
-                        :items="typeActiviteList"
-                        v-model="newActivite.idTypeActivite"></v-select>
+                    <v-select label="Type de l'activité" :items="typeActiviteList" item-title="typeActivite"
+                        item-value="id" v-model="newActivite.idTypeActivite"></v-select>
                 </v-col>
                 <v-col cols="8">
-                    <v-select label="EC concerné" 
-                    :items="[
-                        'Systèmes_Info&Algo', 'Mécaniques_des_fluides',
-                        'Thermodynamiques', 'Mécaniques_génarales1',
-                        'Magnétostatiques', 'Analyses',
-                        'Chimie', 'Resistances_des_Materiau',
-                        'Dessin_techniques', 'Mathématiques',
-                        'Français', 'Anglais']"
-                    v-model="newActivite.idEc"></v-select>
+                    <v-select label="EC concerné" :items="ecList" item-title="nomEc" item-value="id"
+                        v-model="newActivite.idEc"></v-select>
                 </v-col>
                 <v-col>
-                    <v-btn
-                        text="Valider"
-                        @click="validerActivite"
-                        ></v-btn>
+                    <v-btn text="Valider" @click="validerActivite"></v-btn>
                 </v-col>
 
             </v-col>
