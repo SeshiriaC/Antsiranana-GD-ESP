@@ -68,7 +68,6 @@ const newActivite = ref({
 onMounted(() => {
     typeActiviteStore.fetchTypeActivites();
 
-
 });
 
 // Function to handle form submission

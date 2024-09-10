@@ -20,7 +20,12 @@ export const useActiviteStore = defineStore("activite", () => {
   const idEc = ref(null);
   const idEnseignant = ref(null);
   const idClasse = ref(null);
-  const selectedClasseInStore = ref(null); // Hold the selected class
+  const selectedClasseInStore = ref(null);
+
+  //Nommenclature
+  const typeActivite = ref(null);
+  const classe = ref(null);
+  const ec = ref(null);
 
   // Fetch all activities
   function fetchActivite() {
@@ -40,13 +45,19 @@ export const useActiviteStore = defineStore("activite", () => {
   // Fetch activities by class
   function fetchActiviteByClasse(idClasse) {
     restApi
-      .get(`api/activite/par-classe/${idClasse}`)
+      .get(
+        `api/activite/par-classe/${idClasse}/par-enseignant/${enseignantResponsable.value.id}`
+      )
       .then((response) => {
-        console.log(
-          "Fetch activite par classe, expected list filtré par classe"
-        );
-        list.value = response.data;
-        console.log("Fetched activite:", list);
+        if (response.status == 200) {
+          console.log(
+            "Fetch activite par classe, expected list filtré par classe"
+          );
+          list.value = response.data;
+          console.log("Fetched activite:", list);
+        }
+        overlayStore.hide();
+        console.log("Activités récupérées avec succès");
       })
       .catch((error) => {
         console.log(
@@ -55,8 +66,6 @@ export const useActiviteStore = defineStore("activite", () => {
         console.error(error);
       });
   }
-
-
 
   return {
     id,
@@ -68,8 +77,10 @@ export const useActiviteStore = defineStore("activite", () => {
     idEnseignant,
     idClasse,
     selectedClasseInStore,
+    typeActivite,
+    classe,
+    ec,
     fetchActivite,
     fetchActiviteByClasse,
-    
   };
 });
