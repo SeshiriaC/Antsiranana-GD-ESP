@@ -56,7 +56,7 @@ const ecList = [
 // Etat local pour les nouvelles activités
 const newActivite = ref({
     date: null,
-    designationActivite: "",
+    nomActivite: "",
     idTypeActivite: null,
     idClasse: null,
     idEc: null,
@@ -67,9 +67,7 @@ const newActivite = ref({
 // Récupère typeActivites on mount
 onMounted(() => {
     typeActiviteStore.fetchTypeActivites();
-    // Fetch typeActivites
 
-    // Fetch enseignant ID and set it in the newActivite object
 
 });
 
@@ -88,12 +86,12 @@ function validerActivite() {
 
     // Créer une activité
     restApi
-        .post(`/api/activite/${newActivite.value.idTypeActivite}`, newActivite.value)
+        .post(`/api/activite/ajouter-activite/${newActivite.value.idTypeActivite}`, newActivite.value)
         .then((response) => {
             if (response.status == 200) alert.successSave();
             overlay.hide();
             console.log("Activité créée avec succès !");
-            fetchActivite();
+
         })
         .catch((error) => {
             console.error("Erreur lors de la création de l'activité :", error);
@@ -113,8 +111,7 @@ function validerActivite() {
         <v-row no-gutters>
             <v-col cols="8">
                 <v-col cols="8">
-                    <v-text-field clearable label="Nom de l'activité"
-                        v-model="newActivite.designationActivite"></v-text-field>
+                    <v-text-field clearable label="Nom de l'activité" v-model="newActivite.nomActivite"></v-text-field>
                 </v-col>
                 <v-col cols="8">
                     <v-select label="Type de l'activité" :items="typeActiviteList" item-title="typeActivite"

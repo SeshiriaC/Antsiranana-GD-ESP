@@ -15,7 +15,7 @@ export const useActiviteStore = defineStore("activite", () => {
   const list = ref([]);
   const id = ref(null);
   const date = ref(null);
-  const designation = ref(null);
+  const nomActivite = ref(null);
   const idTypeActivite = ref(null);
   const idEc = ref(null);
   const idEnseignant = ref(null);
@@ -62,7 +62,7 @@ export const useActiviteStore = defineStore("activite", () => {
     id,
     list,
     date,
-    designation,
+    nomActivite,
     idTypeActivite,
     idEc,
     idEnseignant,
