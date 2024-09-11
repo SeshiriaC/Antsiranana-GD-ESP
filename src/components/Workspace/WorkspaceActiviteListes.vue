@@ -31,7 +31,10 @@ const enseignantStore = useEnseignantStore();
 // Local state for selected class and sorting order
 const selectedClasse = computed(() => classeStore.selectedClasseInStore);
 const enseignantResponsable = computed(() => enseignantStore.fetchedEnseignant);
-const sortOrder = ref("asc"); // State for sorting order ('asc' or 'desc')
+
+// Etat des filtres
+const sortOrder = ref("asc"); 
+const sortNameOrder = ref("asc");
 
 // Récupérer idEnseignant en utilisant idPersonne dans cookies
 const idPersonne = cookies.get("idPersonne");
@@ -86,7 +89,24 @@ function fetchActivitesByClasse(idClasse) {
   }
 }
 
-// Function to sort activities by date
+// Sort activities by name quand sort order changes
+watch(sortNameOrder, () => {
+  sortActivitiesByName();
+});
+
+// Sort activite par nom
+function sortActivitiesByName() {
+  activiteStore.list.value.sort((a, b) => {
+    const nameA = a.nomActivite.toLowerCase(); // Convert to lowercase for case-insensitive sorting
+    const nameB = b.nomActivite.toLowerCase();
+    return sortNameOrder.value === "asc"
+      ? nameA.localeCompare(nameB)
+      : nameB.localeCompare(nameA); // Sort based on the current order
+  });
+}
+
+
+// Sort activite par date
 function sortActivities() {
   activiteStore.list.value.sort((a, b) => {
     const dateA = new Date(a.date);
@@ -95,9 +115,6 @@ function sortActivities() {
   });
 }
 
-function sortActivitiesByName() {
-  activiteStore.list.value
-}
 </script>
 
 <template>
@@ -121,9 +138,9 @@ function sortActivitiesByName() {
             </th>
             <th>Type d'activité</th>
             <th>Activité
-              <v-btn v-if="sortOrder === 'desc'" icon="mdi-arrow-down" @click="sortNameOrder = 'asc'"
+              <v-btn v-if="sortNameOrder === 'desc'" icon="mdi-arrow-down" @click="sortNameOrder = 'asc'"
                 class="mx-1 elevation-0"></v-btn>
-              <v-btn v-else-if="sortOrder === 'asc'" icon="mdi-arrow-up" @click="sortNameOrder = 'desc'"
+              <v-btn v-else-if="sortNameOrder === 'asc'" icon="mdi-arrow-up" @click="sortNameOrder = 'desc'"
                 class="mx-1 elevation-0"></v-btn>
             </th>
             <th>Element constitutif</th>
