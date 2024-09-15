@@ -324,6 +324,16 @@ export const useNavigationStore = defineStore("navigation", () => {
             ],
           });
         }
+
+        //Ajout de la navigation pour `/evaluations`
+        if (!list.value.some((item) => item.path == "/evaluations")) {
+          access.enseignant.push({
+            name: "Gestion des évaluations",
+            path: "/evaluations",
+            icon: "mdi-folder",
+          });
+        }
+
         if (service.verifyIfNotEmpty(access.enseignant))
           return access.enseignant;
         else break;

@@ -5,7 +5,7 @@ import { Service } from "@/plugins/service";
 import { Scroll } from "@/plugins/scroll";
 
 // import Vue's plugins
-import { onBeforeMount, watch, ref, computed } from "vue";
+import { onBeforeMount, onMounted, watch, ref, computed, nextTick } from "vue";
 
 // import my Pinia plugins
 import { useAlertStore } from "@/pinia/alert";
@@ -14,6 +14,7 @@ import { useClasseStore } from "@/pinia/classe";
 import { useActiviteStore } from "@/pinia/activite";
 import { Cookies } from "@/plugins/cookies";
 import { useEnseignantStore } from "@/pinia/enseignant";
+import WorkspaceActiviteModifier from "./WorkspaceActiviteModifier.vue";
 
 // instance my plugins
 const restApi = new RestApi();
@@ -29,11 +30,17 @@ const activiteStore = useActiviteStore();
 const enseignantStore = useEnseignantStore();
 
 // Local state for selected class and sorting order
-const selectedClasse = computed(() => classeStore.selectedClasseInStore);
+const selectedClasse = computed(() => activiteStore.selectedClasseInStore);
 const enseignantResponsable = computed(() => enseignantStore.fetchedEnseignant);
 
+
+//Etats des boutons d'actions
+const editingActivite = ref(null);
+const isEditing = ref(false);
+
+
 // Etat des filtres
-const sortOrder = ref("asc"); 
+const sortOrder = ref("asc");
 const sortNameOrder = ref("asc");
 
 // Récupérer idEnseignant en utilisant idPersonne dans cookies
@@ -63,6 +70,11 @@ watch(sortOrder, () => {
   sortActivities(); // Sort activities whenever the sort order changes
 });
 
+// Sort activities by name quand sort order changes
+watch(sortNameOrder, () => {
+  sortActivitiesByName();
+});
+
 // Function to fetch activities by class ID
 function fetchActivitesByClasse(idClasse) {
   if (service.verifyIfNotEmpty(idClasse)) {
@@ -89,10 +101,6 @@ function fetchActivitesByClasse(idClasse) {
   }
 }
 
-// Sort activities by name quand sort order changes
-watch(sortNameOrder, () => {
-  sortActivitiesByName();
-});
 
 // Sort activite par nom
 function sortActivitiesByName() {
@@ -115,6 +123,22 @@ function sortActivities() {
   });
 }
 
+// Fonction pour actionner la modification et passer l'activité selectionné
+function openEditDialog(activite) {
+  editingActivite.value = activite;
+  console.log(editingActivite);
+  isEditing.value = true;
+}
+
+// Fonction pour gérer la sauvegarde ou la fermeture du dialog de modification
+function closeEditDialog() {
+  isEditing.value = false; // Hide the dialog
+  editingActivite.value = null; // Reset the editing activity
+}
+
+//function changeEditedValue(activite) {}
+
+
 </script>
 
 <template>
@@ -123,8 +147,7 @@ function sortActivities() {
       <h5 class="text-h5">Liste des activités</h5>
     </v-col>
   </v-row>
-  <v-row no-gutters class="mt-2">
-  </v-row>
+  <v-row no-gutters class="mt-2"></v-row>
   <v-row no-gutters class="mt-2" v-if="service.verifyIfNotEmpty(activiteStore.list.value)">
     <v-col cols="12">
       <v-table class="elevation-1" density="compact">
@@ -148,8 +171,7 @@ function sortActivities() {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(value, index) in activiteStore.list.value" :key="index">
-
+          <tr v-for="(value, index) in activiteStore.list.value" :id="index" :key="index">
             <td class="text-truncate">{{ value.date }}</td>
             <td class="text-truncate">{{ value.typeActivite }}</td>
             <td class="text-truncate">{{ value.nomActivite }}</td>
@@ -157,7 +179,7 @@ function sortActivities() {
             <td>
               <v-row class="my-2">
                 <v-btn density="compact" icon="mdi-delete-forever" class="p-3 mx-1" />
-                <v-btn density="compact" icon="mdi-square-edit-outline" class="p-3 mx-1" />
+                <v-btn density="compact" icon="mdi-square-edit-outline" class="p-3 mx-1"  @click="openEditDialog(value)" />
               </v-row>
             </td>
           </tr>
@@ -165,4 +187,7 @@ function sortActivities() {
       </v-table>
     </v-col>
   </v-row>
+
+
+  <WorkspaceActiviteModifier v-model="isEditing" :activite="editingActivite" @close="closeEditDialog" />
 </template>

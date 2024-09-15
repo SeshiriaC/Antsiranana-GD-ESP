@@ -7,6 +7,7 @@ import { useNiveauStore } from '@/pinia/niveau';
 import { Scroll } from '@/plugins/scroll';
 import { Service } from '@/plugins/service';
 import { RestApi } from '@/plugins/restApi';
+import { useActiviteStore } from '@/pinia/activite';
 
 // instance my plugins
 const restApi = new RestApi();
@@ -18,6 +19,7 @@ const classeStore = useClasseStore();
 const mentionStore = useMentionStore();
 const anneeUniversitaireStore = useAnneeUniversitaireStore();
 const niveauStore = useNiveauStore();
+const activiteStore = useActiviteStore();
 
 // Computed properties to access state from the stores
 const anneeUniversitaireList = computed(() => anneeUniversitaireStore.list);
@@ -135,9 +137,9 @@ watch(selectedClasse, (newIdClasse) => {
       (classe) => classe.id === newIdClasse
     );
     console.log("Classe: ", selectedClasseObject.designationClasse);
-    classeStore.selectedClasseInStore = selectedClasseObject.id;
+    activiteStore.selectedClasseInStore = selectedClasseObject.id;
   } else {
-    classeStore.selectedClasseInStore = null;
+    activiteStore.selectedClasseInStore = null;
   }
 })
 

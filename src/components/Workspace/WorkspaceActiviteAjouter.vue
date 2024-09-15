@@ -67,7 +67,6 @@ const newActivite = ref({
 // Récupère typeActivites on mount
 onMounted(() => {
     typeActiviteStore.fetchTypeActivites();
-
 });
 
 // Function to handle form submission
@@ -101,39 +100,35 @@ function validerActivite() {
 </script>
 
 <template>
-    <v-container>
-        <v-row no-gutters class="mt-8">
-            <v-col cols="12">
-                <h5 class="text-h5">Ajouter une activité</h5>
+    <v-row no-gutters class="mt-4">
+        <v-col cols="12">
+            <h5 class="text-h5">Ajouter une activité</h5>
+        </v-col>
+    </v-row>
+    <v-row no-gutters>
+        <v-col cols="6">
+            <v-col cols="9">
+                <v-text-field clearable label="Nom de l'activité" v-model="newActivite.nomActivite"></v-text-field>
             </v-col>
-        </v-row>
-        <v-row no-gutters>
-            <v-col cols="8">
-                <v-col cols="8">
-                    <v-text-field clearable label="Nom de l'activité" v-model="newActivite.nomActivite"></v-text-field>
-                </v-col>
-                <v-col cols="8">
-                    <v-select label="Type de l'activité" :items="typeActiviteList" item-title="typeActivite"
-                        item-value="id" v-model="newActivite.idTypeActivite"></v-select>
-                </v-col>
-                <v-col cols="8">
-                    <v-select label="EC concerné" :items="ecList" item-title="nomEc" item-value="id"
-                        v-model="newActivite.idEc"></v-select>
-                </v-col>
-                <v-col>
-                    <v-btn text="Valider" @click="validerActivite"></v-btn>
-                </v-col>
-
+            <v-col cols="9">
+                <v-select label="Type de l'activité" :items="typeActiviteList" item-title="typeActivite" item-value="id"
+                    v-model="newActivite.idTypeActivite"></v-select>
             </v-col>
+            <v-col cols="9">
+                <v-select label="EC concerné" :items="ecList" item-title="nomEc" item-value="id"
+                    v-model="newActivite.idEc"></v-select>
+            </v-col>
+            <v-col>
+                <v-btn text="Valider" @click="validerActivite"></v-btn>
+            </v-col>
+        </v-col>
 
 
-            <v-row align="start">
-                <v-date-picker elevation="24" v-model="newActivite.date"></v-date-picker>
-            </v-row>
+        <v-col align="center">
+            <v-date-picker elevation="24" v-model="newActivite.date"></v-date-picker>
+        </v-col>
+    </v-row>
 
 
-        </v-row>
-
-    </v-container>
 
 </template>
