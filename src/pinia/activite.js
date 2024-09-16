@@ -86,6 +86,7 @@ export const useActiviteStore = defineStore("activite", () => {
           overlay.hide();
         });
     }
+    return null;
   }
 
   return {
@@ -103,6 +104,6 @@ export const useActiviteStore = defineStore("activite", () => {
     ec,
     fetchActivite,
     fetchActiviteByClasse,
-    deleteActivite
+    deleteActivite,
   };
 });

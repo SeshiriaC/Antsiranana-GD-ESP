@@ -11,12 +11,17 @@ function oui() {
     console.log("Suppression de l'activité, id: ", dialogStore.data);
     activiteStore.deleteActivite(dialogStore.data);
     dialogStore.hide();
+    setTimeout(refreshPage, 2000);
 }
 
 function non() {
     dialogStore.hide();
 }
 
+//Refreshhhh 
+const refreshPage = () => {
+    window.location.reload(); // Reloads the current page
+};
 </script>
 
 <template>
