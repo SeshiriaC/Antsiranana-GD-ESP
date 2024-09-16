@@ -15,6 +15,8 @@ import { useActiviteStore } from "@/pinia/activite";
 import { Cookies } from "@/plugins/cookies";
 import { useEnseignantStore } from "@/pinia/enseignant";
 import WorkspaceActiviteModifier from "./WorkspaceActiviteModifier.vue";
+import { useDialogStore } from "@/pinia/dialog";
+import DialogSupprimerActivite from "../Dialog/DialogSupprimerActivite.vue";
 
 // instance my plugins
 const restApi = new RestApi();
@@ -22,12 +24,14 @@ const service = new Service();
 const scroll = new Scroll();
 const cookies = new Cookies();
 
+
 // instance my Pinia plugins
 const alertStore = useAlertStore();
 const overlayStore = useOverlayStore();
 const classeStore = useClasseStore();
 const activiteStore = useActiviteStore();
 const enseignantStore = useEnseignantStore();
+const dialog = useDialogStore();
 
 // Local state for selected class and sorting order
 const selectedClasse = computed(() => activiteStore.selectedClasseInStore);
@@ -134,10 +138,19 @@ function openEditDialog(activite) {
 function closeEditDialog() {
   isEditing.value = false; // Hide the dialog
   editingActivite.value = null; // Reset the editing activity
+  refreshPage();
 }
 
-//function changeEditedValue(activite) {}
+//Fonctionner pour actionner la suppression
+function openDeleteDialog(idActivite) {
+  console.log(idActivite);
+  dialog.show("Supprimer l'activité?", "DialogSupprimerActivite", idActivite);
+}
 
+//Refreshhhh 
+const refreshPage = () => {
+  window.location.reload(); // Reloads the current page
+};
 
 </script>
 
@@ -178,8 +191,10 @@ function closeEditDialog() {
             <td class="text-truncate">{{ value.ec }}</td>
             <td>
               <v-row class="my-2">
-                <v-btn density="compact" icon="mdi-delete-forever" class="p-3 mx-1" />
-                <v-btn density="compact" icon="mdi-square-edit-outline" class="p-3 mx-1"  @click="openEditDialog(value)" />
+                <v-btn density="compact" icon="mdi-delete-forever" class="p-3 mx-1"
+                  @click="openDeleteDialog(value.id)" />
+                <v-btn density="compact" icon="mdi-square-edit-outline" class="p-3 mx-1"
+                  @click="openEditDialog(value)" />
               </v-row>
             </td>
           </tr>

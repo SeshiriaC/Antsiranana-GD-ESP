@@ -37,10 +37,10 @@ function logout() {
 </script>
 
 <template>
+  <!-- permanent -->
     <v-navigation-drawer
       v-model="navigation.showNav"
       location="left"
-      permanent
       style="height: 100%"
       width="350"
     >

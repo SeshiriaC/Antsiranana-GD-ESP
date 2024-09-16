@@ -4,12 +4,15 @@ import { Service } from "@/plugins/service";
 import { useOverlayStore } from "./overlay";
 import { defineStore } from "pinia";
 import { ref } from "vue";
+import { useAlertStore } from "./alert";
 
 export const useActiviteStore = defineStore("activite", () => {
   // Initialize plugins
   const restApi = new RestApi();
   const service = new Service();
+
   const overlay = useOverlayStore();
+  const alert = useAlertStore();
 
   // State variables
   const list = ref([]);
@@ -67,6 +70,24 @@ export const useActiviteStore = defineStore("activite", () => {
       });
   }
 
+  // Supprimer une activité
+  function deleteActivite(idValue) {
+    if (service.verifyIfNotEmpty(idValue)) {
+      overlay.show();
+      restApi
+        .delete(`api/activite/supprimer-activite/${idValue}`)
+        .then((response) => {
+          if (response === 200) alert.successDelete();
+          overlay.hide();
+        })
+        .catch((error) => {
+          alert.error();
+          console.error(error);
+          overlay.hide();
+        });
+    }
+  }
+
   return {
     id,
     list,
@@ -82,5 +103,6 @@ export const useActiviteStore = defineStore("activite", () => {
     ec,
     fetchActivite,
     fetchActiviteByClasse,
+    deleteActivite
   };
 });

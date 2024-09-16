@@ -48,6 +48,7 @@ import DialogEnregistrerEtudiantDeliberation from './Dialog/DialogEnregistrerEtu
 import DialogEnregistrerAutorisationInscription from './Dialog/DialogEnregistrerAutorisationInscription.vue';
 import DialogVisualiserReleveNote from './Dialog/DialogVisualiserReleveNote.vue';
 import DialogVisualiserUE from './Dialog/DialogVisualiserUE.vue';
+import DialogSupprimerActivite from './Dialog/DialogSupprimerActivite.vue';
 
 
 
@@ -97,7 +98,8 @@ const components = {
   DialogEnregistrerEtudiantDeliberation,
   DialogEnregistrerAutorisationInscription,
   DialogVisualiserReleveNote,
-  DialogVisualiserUE
+  DialogVisualiserUE,
+  DialogSupprimerActivite
 };
 
 // instance of some pinia plugins
@@ -106,7 +108,8 @@ const dialog = useDialogStore();
 
 <template>
   <!-- The principale Dialog component -->
-  <v-dialog v-model="dialog.isShow" class="text-center mx-16" :width="dialog.width" transition="dialog-bottom-transition" :fullscreen="dialog.fullscreen">
+  <v-dialog v-model="dialog.isShow" class="text-center mx-16" :width="dialog.width"
+    transition="dialog-bottom-transition" :fullscreen="dialog.fullscreen">
     <v-card class="pa-16 rounded-xl">
       <v-card-text>
         <h3>{{ dialog.title }}</h3>
@@ -114,7 +117,7 @@ const dialog = useDialogStore();
 
       <!-- auto-select the component -->
       <component :is="components[dialog.component]"></component>
-      
+
     </v-card>
   </v-dialog>
 </template>

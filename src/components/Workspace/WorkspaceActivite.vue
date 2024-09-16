@@ -35,18 +35,18 @@ const selectedClasse = ref(null);
 
 // Reset Selected value % aux selections supérieures 
 const ResetValueAtSelectedAU = () => {
-  selectedMention = null;
-  selectedNiveau = null;
-  selectedClasse = null;
+  selectedMention.value = null;
+  selectedNiveau.value = null;
+  selectedClasse.value = null;
 }
 
 const ResetValueAtSelectedMention = () => {
-  selectedClasse = null;
-  selectedNiveau = null;
+  selectedClasse.value = null;
+  selectedNiveau.value = null;
 }
 
 const ResetClasseAtSelectedNiveau = () => {
-  selectedClasse = null;
+  selectedClasse.value = null;
 }
 
 onBeforeMount(() => {
@@ -85,7 +85,7 @@ onBeforeMount(() => {
 });
 
 // Watcher for changes in selectedAnneeUniversitaire
-watch(selectedAnneeUniversitaire, (newIdAU) => {
+watch(selectedAnneeUniversitaire.value, (newIdAU) => {
   // Reset dependent states
   selectedMention.value = null;
   selectedClasse.value = null;

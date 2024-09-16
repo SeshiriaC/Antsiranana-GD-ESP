@@ -6,6 +6,7 @@ import { useAlertStore } from "@/pinia/alert";
 import { useActiviteStore } from "@/pinia/activite";
 import { RestApi } from "@/plugins/restApi";
 import { useTypeActiviteStore } from "@/pinia/typeActivite";
+import { useClasseStore } from "@/pinia/classe";
 
 // Props passed from parent
 const props = defineProps({
@@ -18,6 +19,7 @@ const overlayStore = useOverlayStore();
 const alertStore = useAlertStore();
 const activiteStore = useActiviteStore();
 const typeActiviteStore = useTypeActiviteStore();
+const classeStore = useClasseStore();
 
 
 // API
@@ -25,23 +27,10 @@ const restApi = new RestApi();
 
 // Editing state
 const isEditing = ref(true);
-//const passedActivite = ref({ ...props.activite });
-const editedActivite = ref({ ...props.activite });
+const passedActivite = ref({});
+//const editedActivite = ref({ ...props.activite });
 
-
-/* What editedActivite should be like
- {
-        id: passedActivite.value.id,
-        classe: passedActivite.value.classe,
-        ec: "",
-        date: null,
-        nomActivite: "",
-        typeActivite: "",
-        idTypeActivite: null,
-        idClasse: passedActivite.value.idClasse,
-        idEc: null,
-        idEnseignantResponsable: passedActivite.value.idEnseignantResponsable,
-    }*/
+const editedActivite = ref({});
 
 
 const id = ref()
@@ -81,6 +70,8 @@ const ecList = [
 
 // Function to save changes
 function saveChanges() {
+
+
     // Assigner valeur type activite
     const editedActiviteType = typeActiviteStore.list.find((element) => element.id === editedActivite.value.idTypeActivite);
     editedActivite.value.typeActivite = editedActiviteType.typeActivite;
@@ -89,7 +80,17 @@ function saveChanges() {
     const editedActiviteEc = ecList.find((ec) => ec.id === editedActivite.value.idEc);
     editedActivite.value.ec = editedActiviteEc.nomEc;
 
-    //console.log("Modifier: ", passedActivite.value);
+    //Assigner la valeur de la classe
+    editedActivite.value.idClasse = props.activite.idClasse;
+
+    const editedActiviteClasse = classeStore.list.find((classe) => classe.id === editedActivite.value.idClasse);
+    console.log(editedActiviteClasse);
+    editedActivite.value.classe = editedActiviteClasse.designationClasse;
+
+    editedActivite.value.id = props.activite.id;
+    editedActivite.value.idEnseignantResponsable = props.activite.idEnseignantResponsable;
+
+    console.log("Modifier: ", props.activite);
     console.log("Activité changé: ", editedActivite.value);
 
     sendData(editedActivite.value.id, editedActivite.value);
@@ -103,8 +104,9 @@ function sendData(id, data) {
         .then((response) => {
             if (response.status === 200) {
                 alertStore.add("success", "Activité mise à jour avec succès!");
-                //activiteStore.fetchActivite(); // Refresh activities list
+                activiteStore.fetchActivite(); // Refresh activities list
                 isEditing.value = false; // Close dialog
+                editedActivite.value = {};
                 emit('close');
             }
         })
@@ -123,8 +125,9 @@ onMounted(() => {
 });
 
 watch(props.activite, (newActivite) => {
-    editedActivite.value = newActivite;
-})
+    console.log("Props: ", props.activite);
+    passedActivite.value = { ...newActivite };
+}, { deep: true })
 </script>
 
 <template>
