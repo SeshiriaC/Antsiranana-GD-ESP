@@ -47,6 +47,8 @@ import WorkspaceActiviteListes from "@/components/Workspace/WorkspaceActiviteLis
 import WorkspaceEtudiantProfil from "@/components/Workspace/WorkspaceEtudiantProfil.vue";
 import WorkspaceActiviteAjouter from "@/components/Workspace/WorkspaceActiviteAjouter.vue";
 import WorkspaceEvaluations from "@/components/Workspace/WorkspaceEvaluations.vue";
+import WorkspaceEvaluationPresence from "@/components/Workspace/WorkspaceEvaluationPresence.vue";
+import WorkspaceEvaluationCompetence from "@/components/Workspace/WorkspaceEvaluationCompetence.vue";
 
 // instance of my router and export it
 export default createRouter({
@@ -273,10 +275,23 @@ export default createRouter({
           component: WorkspaceActiviteListes,
         },
       ],
-    },{
+    },
+    {
       name: "Les évaluations",
       path: "/evaluations",
-      component: WorkspaceEvaluations
-    }
+      component: WorkspaceEvaluations,
+      children: [
+        {
+          name: "Evaluation de présence",
+          path: "presence",
+          component: WorkspaceEvaluationPresence,
+        },
+        {
+          name: "Evaluations de compétences",
+          path: "competence",
+          component: WorkspaceEvaluationCompetence,
+        },
+      ],
+    },
   ],
 });

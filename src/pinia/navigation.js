@@ -330,7 +330,19 @@ export const useNavigationStore = defineStore("navigation", () => {
           access.enseignant.push({
             name: "Gestion des évaluations",
             path: "/evaluations",
-            icon: "mdi-folder",
+            icon: "mdi-file-document-edit-outline",
+            children: [
+              {
+                name: "Evaluation de présence",
+                path: "/evaluations/presence",
+                icon: "mdi-account-multiple-check",
+              },
+              {
+                name: "Evaluation de compétences",
+                path: "/evaluations/competence",
+                icon: "mdi-file-account",
+              },
+            ],
           });
         }
 
