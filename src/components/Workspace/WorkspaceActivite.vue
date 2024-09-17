@@ -28,13 +28,14 @@ const classeList = computed(() => classeStore.list);
 const niveauList = computed(() => niveauStore.list);
 
 // Bind selected values to v-model in template
-const selectedAnneeUniversitaire = ref(anneeUniversitaireStore.id);
+const selectedAnneeUniversitaire = ref(null);
 const selectedNiveau = ref(null);
 const selectedMention = ref(null);
 const selectedClasse = ref(null);
 
 // Reset Selected value % aux selections supérieures 
 const ResetValueAtSelectedAU = () => {
+  anneeUniversitaireStore.id = selectedAnneeUniversitaire.value;
   selectedMention.value = null;
   selectedNiveau.value = null;
   selectedClasse.value = null;
@@ -199,7 +200,7 @@ function fetchClasseById(id) {
 
       <v-col class="pr-12">
         <v-select density="comfortable" label="Année universitaire" :items="anneeUniversitaireList" item-title="nomAU"
-          item-value="id" v-model="selectedAnneeUniversitaire" @change="ResetValueAtSelectedAU()" />
+          item-value="id" v-model="selectedAnneeUniversitaire" @update:model-value="ResetValueAtSelectedAU()" />
       </v-col>
 
       <v-col class="px-2">
