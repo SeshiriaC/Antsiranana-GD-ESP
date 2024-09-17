@@ -12,6 +12,7 @@ import { useAlertStore } from "@/pinia/alert";
 import { useOverlayStore } from "@/pinia/overlay";
 import { useClasseStore } from "@/pinia/classe";
 import { useActiviteStore } from "@/pinia/activite";
+import { useAnneeUniversitaireStore } from "@/pinia/anneeUniversitaire";
 import { Cookies } from "@/plugins/cookies";
 import { useEnseignantStore } from "@/pinia/enseignant";
 import WorkspaceActiviteModifier from "./WorkspaceActiviteModifier.vue";
@@ -32,11 +33,17 @@ const classeStore = useClasseStore();
 const activiteStore = useActiviteStore();
 const enseignantStore = useEnseignantStore();
 const dialog = useDialogStore();
+const anneeUStore = useAnneeUniversitaireStore();
 
 // Local state for selected class and sorting order
 const selectedClasse = computed(() => activiteStore.selectedClasseInStore);
 const enseignantResponsable = computed(() => enseignantStore.fetchedEnseignant);
 
+
+/**
+ * La variable pour rechercher dynamiquement dans la table
+ */
+// const search = ref("");
 
 //Etats des boutons d'actions
 const editingActivite = ref(null);
@@ -78,6 +85,19 @@ watch(sortOrder, () => {
 watch(sortNameOrder, () => {
   sortActivitiesByName();
 });
+
+
+/**
+ * 
+ * Fonction pour lister les années universitaires
+ */
+// const fetchAnneeU = () => {
+//   restApi.get('api/annee').then((response) => {
+//     anneeUStore.list = response.data;
+//   }).catch((error) => {
+//     console.error(error);
+//   })
+// }
 
 // Function to fetch activities by class ID
 function fetchActivitesByClasse(idClasse) {
@@ -127,6 +147,46 @@ function sortActivities() {
   });
 }
 
+/**
+ * 
+ * Trier dynamiquement la liste d'activité par année universitaire
+ */
+const activiteList = computed(() => {
+  const anneeActuelle = anneeUStore.list.filter((ann) => {
+    return ann.id == anneeUStore.id;
+  });
+
+  const debut = new Date(anneeActuelle[0].debutAU);
+  const fin = new Date(anneeActuelle[0].finAU);
+
+  return activiteStore.list.value.filter((activ) => {
+    return (new Date(activ.date) >= debut && new Date(activ.date) <= fin)
+  });
+  // finalListActivities.value = [...temp];
+
+  // return temp
+})
+
+/**
+ * 
+ * Chercher dans la liste d'activité
+ */
+// const finalListActivities = ref([]);
+// const searchActivite = () => {
+//   finalListActivities.value = activiteList.value.filter((act) => {
+//     if (search.value != "" || !search.value.startsWith(" ")) {
+//       return (
+//         act.nomActivite.toLowerCase().includes(search.value.trim().toLowerCase()) ||
+//         act.typeActivite.toLowerCase().includes(search.value.trim().toLowerCase()) ||
+//         act.classe.toLowerCase().includes(search.value.trim().toLowerCase()) ||
+//         act.date.toLowerCase().includes(search.value.trim().toLowerCase()) ||
+//         act.ec.toLowerCase().includes(search.value.trim().toLowerCase())
+//       )
+//     } else return true;
+//   })
+
+// }
+
 // Fonction pour actionner la modification et passer l'activité selectionné
 function openEditDialog(activite) {
   editingActivite.value = activite;
@@ -155,10 +215,14 @@ const refreshPage = () => {
 </script>
 
 <template>
-  <v-row no-gutters class="mt-4">
-    <v-col cols="12">
+  <v-row no-gutters class="mt-4 align-center">
+    <v-col cols="12" md="3">
       <h5 class="text-h5">Liste des activités</h5>
     </v-col>
+    <!-- <v-col cols="12" md="6" offset-md="3">
+      <v-text-field hide-details single-line density="compact" label="Rechercher" v-model="search"
+        @input="searchActivite"></v-text-field>
+    </v-col> -->
   </v-row>
   <v-row no-gutters class="mt-2"></v-row>
   <v-row no-gutters class="mt-2" v-if="service.verifyIfNotEmpty(activiteStore.list.value)">
@@ -184,7 +248,7 @@ const refreshPage = () => {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(value, index) in activiteStore.list.value" :id="index" :key="index">
+          <tr v-for="(value, index) in activiteList" :id="index" :key="index">
             <td class="text-truncate">{{ value.date }}</td>
             <td class="text-truncate">{{ value.typeActivite }}</td>
             <td class="text-truncate">{{ value.nomActivite }}</td>
